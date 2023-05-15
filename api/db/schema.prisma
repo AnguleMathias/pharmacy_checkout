@@ -24,15 +24,40 @@ model User {
 }
 
 model PharmacistProfile {
-  id     Int  @id @default(autoincrement())
-  user   User @relation(fields: [userId], references: [id])
-  userId Int  @unique
-  // Add any additional fields specific to pharmacists
+  id             Int             @id @default(autoincrement())
+  user           User            @relation(fields: [userId], references: [id])
+  userId         Int             @unique
+  inventoryItems InventoryItem[]
 }
 
 model CustomerProfile {
-  id     Int  @id @default(autoincrement())
-  user   User @relation(fields: [userId], references: [id])
-  userId Int  @unique
-  // Add any additional fields specific to customers
+  id     Int    @id @default(autoincrement())
+  user   User   @relation(fields: [userId], references: [id])
+  userId Int    @unique
+  bills  Bill[]
+}
+
+model InventoryItem {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  quantity    Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  pharmacistProfile   PharmacistProfile @relation(fields: [pharmacistProfileId], references: [id])
+  pharmacistProfileId Int
+  bill                Bill?             @relation(fields: [billId], references: [id])
+  billId              Int?
+}
+
+model Bill {
+  id        Int      @id @default(autoincrement())
+  total     Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  inventoryItems    InventoryItem[]
+  customerProfile   CustomerProfile? @relation(fields: [customerProfileId], references: [id])
+  customerProfileId Int?
 }
